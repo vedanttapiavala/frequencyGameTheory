@@ -12,7 +12,7 @@ public class Main {
         for (int trialNum = 0; trialNum < 1000; trialNum++) {
             int freqOne = p1.genNote();
             int freqTwo = p2.genNote();
-            int[] chordProgressionFreq = chordProgression.get(trialNum);
+            int[] chordProgressionFreq = chordProgression.get(trialNum % chordProgression.size());
             /**
              * weighted average for the current note: chord progression frequency is weighted at 60%
              * Each individual player's played note's frequency is weighted at 20%
