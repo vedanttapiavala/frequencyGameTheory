@@ -1,11 +1,12 @@
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.*; //BufferedWriter, FileWriter, and File
+import java.util.*; //ArrayList, HashMap, and Map
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        System.out.println("Hello, World!");
         Player p1 = new RandomPlayer();
         Player p2 = new RandomPlayer();
+        String fileName = getFileName(p1, p2);
+        BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName))); //will replace file if simulation has already been run
         ArrayList<int[]> chordProgression = new ArrayList<int[]>(); //every int[] is one chord (usually 4 notes)
         int[] bb7 = {116, 147, 175, 208}; // Bb7 -(equal temperament approx.frequencies)-> 116.54(Bb2),146.83(D3), 174.61(F3), Ab(207.65)
         int[] eb7 = {156, 196, 233, 277}; // Eb7 -(equal temperament approx.frequencies)-> Eb3 	155.56, G3	196.00, Bb3 	233.08, Db4 	277.18
@@ -31,7 +32,7 @@ public class Main {
         int measureNum = -1; // counts the measures
         for (int beatNum = 0; beatNum < 96; beatNum++) { // subdividing by eight notes there will be 96 beats in a 12 bar blues
             if (beatNum % 8 == 0) measureNum++; // increments measureNum at the start of every 8 beats --> one measure
-            int freqOne = p1.genNote();
+            int freqOne = p1.genNote(); //gets note based on p1's strategy
             int freqTwo = p2.genNote();
             int[] chordProgressionFreq = chordProgression.get(measureNum);
             /**
@@ -43,10 +44,12 @@ public class Main {
             double varianceScore = 0;
             if (beatNum != 0) {
                 //calculate payoff in here
-                calcVarianceScore(allPastNotes);
+                varianceScore = calcVarianceScore(allPastNotes);
             }
             double harmonyScore = calcHarmonyScore(chordProgressionFreq, freqOne, freqTwo);
         }
+        bw.flush(); //write to relevant notepad
+        bw.close(); //prevent resource leaks
     }
 
     private static double calcVarianceScore(ArrayList<Integer> allPastNotes) {
@@ -55,7 +58,9 @@ public class Main {
          * Find frequencies
          * Find variance of those frequencies
          */
-        
+        //TODO: Josh: make the buckets
+        Map<String, int[]> notesFreqMap = new HashMap<String, int[]>();
+        //example: notesFreqMap.put("A#", {200,300});
         return 0;
     }
 
@@ -95,5 +100,23 @@ public class Main {
             result--;
         }
         return result;
+    }
+
+    /**
+     * Creates a file name unique to this pair of player types
+     * For example, two random players would result in  "Pair: Random Random.txt"
+    **/
+    private static String getFileName(Player p1, Player p2) throws Exception {
+        String fileName = "Pair: ";
+        fileName+=getPlayerBasedFileID(p1);
+        fileName+=getPlayerBasedFileID(p2);
+        return fileName + ".txt";
+    }
+
+    private static String getPlayerBasedFileID(Player p) throws Exception {
+        if (p instanceof RandomPlayer) {
+            return "Random";
+        }
+        throw new Exception("There's a player type without a file ID");
     }
 }
