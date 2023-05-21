@@ -2,7 +2,10 @@ import java.io.*; //BufferedWriter, FileWriter, and File
 import java.util.*; //ArrayList, HashMap, and Map
 
 public class Main {
+    protected static Map<String, double[]> notesFreqMap;
+
     public static void main(String[] args) throws Exception {
+        buildNotesFrequenciesMap();
         Player p1 = new RandomPlayer();
         Player p2 = new RandomPlayer();
         String fileName = getFileName(p1, p2);
@@ -47,9 +50,16 @@ public class Main {
                 varianceScore = calcVarianceScore(allPastNotes);
             }
             double harmonyScore = calcHarmonyScore(chordProgressionFreq, freqOne, freqTwo);
+            double payoff = (varianceScore - harmonyScore)/(varianceScore + harmonyScore);
         }
         bw.flush(); //write to relevant notepad
         bw.close(); //prevent resource leaks
+    }
+
+    private static void buildNotesFrequenciesMap() {
+        notesFreqMap = new HashMap<String, double[]>();
+        //TODO: Josh: make the buckets
+        //example: notesFreqMap.put("A#", {200,300});
     }
 
     private static double calcVarianceScore(ArrayList<Integer> allPastNotes) {
@@ -58,9 +68,7 @@ public class Main {
          * Find frequencies
          * Find variance of those frequencies
          */
-        //TODO: Josh: make the buckets
-        Map<String, int[]> notesFreqMap = new HashMap<String, int[]>();
-        //example: notesFreqMap.put("A#", {200,300});
+        
         return 0;
     }
 
