@@ -60,10 +60,16 @@ public class Main {
             }
             double payoff = (varianceScore - harmonyScore)/(varianceScore + harmonyScore);
             if (p1 instanceof SimpleReinforcementPlayer) {
-                p1.updateProbabilities(payoff);
+                p1.update(payoff);
             }
             if (p2 instanceof SimpleReinforcementPlayer) {
-                p2.updateProbabilities(payoff);
+                p2.update(payoff);
+            }
+            if (p1 instanceof PredictiveHarmonyPlayer) {
+                p1.update(freqTwo);
+            }
+            if (p2 instanceof PredictiveHarmonyPlayer) {
+                p2.update(freqOne);
             }
             bw.write(varianceScore + "\t" + harmonyScore + "\t" + payoff + "\n");
             bw.flush();
@@ -256,6 +262,9 @@ public class Main {
         }
         else if (p instanceof ScalePlayer) {
             return "Scale";
+        }
+        else if (p instanceof PredictiveHarmonyPlayer) {
+            return "PredictiveHarmony";
         }
         throw new Exception("There's a player type without a file ID");
     }

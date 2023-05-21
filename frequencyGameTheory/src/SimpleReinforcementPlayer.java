@@ -43,7 +43,7 @@ public class SimpleReinforcementPlayer extends Player {
     }
 
     @Override
-    protected void updateProbabilities(double recentPayoff) {
+    protected void update(double recentPayoff) {
         probabilities[currNoteInd]+=recentPayoff;
     }
 }
