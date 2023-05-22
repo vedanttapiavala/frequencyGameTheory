@@ -7,9 +7,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         buildNotesFrequenciesMap();
-        Player p1 = new StepwisePlayer();
-        Player p2 = new SimpleReinforcementPlayer();
-        Player p1 = new ChordPlayer();
+        Player p1 = new PredictiveHarmonyPlayer();
         Player p2 = new ChordPlayer();
         String fileName = getFileName(p1, p2);
         BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName))); //will replace file if simulation has already been run
@@ -39,6 +37,7 @@ public class Main {
         ArrayList<Integer> allPastNotes = new ArrayList<Integer>();
         ArrayList<Integer> p1Freq = new ArrayList<Integer>(); //saves player 1 notes to list
         ArrayList<Integer> p2Freq = new ArrayList<Integer>(); //saves player 2 notes to list
+        double payoffSum = 0.0;
         int measureNum = -1; // counts the measures
         for (int beatNum = 0; beatNum < 96*8; beatNum++) { // subdividing by eight notes there will be 96 beats in a 12 bar blues
             if (beatNum % 8 == 0) measureNum++; // increments measureNum at the start of every 8 beats --> one measure
@@ -59,7 +58,7 @@ public class Main {
                 varianceScore = calcVarianceScore(allPastNotes);
             }
             double harmonyScore = calcHarmonyScore(chordProgressionFreq, freqOne, freqTwo);
-            final double normalizationFactor = 1658.833002;
+            final double normalizationFactor = 1658.833002; //calculation shown in paper; uses raw variance/harmony scores for normalization
             varianceScore*=normalizationFactor;
             if (beatNum == 0) {
                 varianceScore = harmonyScore; //makes payoff 0 instead of negative for the first beat
@@ -78,10 +77,12 @@ public class Main {
                 p2.update(freqOne);
             }
             bw.write(varianceScore + "\t" + harmonyScore + "\t" + payoff + "\n");
+            payoffSum+=payoff;
             bw.flush();
         }
-        Musician.play(p1Freq, 1, fileName); //generates MIDI files for player 1
-        Musician.play(p2Freq, 2, fileName); //generates MIDI files for player 2
+        Musician.play(p1Freq, p2Freq, fileName); //generates MIDI files for player 1
+        // Musician.play(p2Freq, 2, fileName); //generates MIDI files for player 2
+        bw.write("\nAverage Payoff: " + String.format("%.4f", payoffSum/(96.0*8)));
         bw.flush(); //write to relevant notepad
         bw.close(); //prevent resource leaks
     }

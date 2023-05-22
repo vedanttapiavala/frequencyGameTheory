@@ -8,7 +8,7 @@ import java.util.*;
  */
 public class Musician {
 
-    public static void play(ArrayList<Integer> freq, int playerNum, String fileName) {
+    public static void play(ArrayList<Integer> player1Freqs, ArrayList<Integer> player2Freqs, String fileName) {
         
         try {
             // Create a Sequence and a Track
@@ -26,25 +26,27 @@ public class Musician {
             track.add(tempoEvent);
             
             // Add Note On and Note Off events for each frequency
-            int channel = 0;
             int velocity = 64;
             int tick = 0;
             int ticksPerBeat = sequence.getResolution();
             
-            for (int frequency : freq) {
-                int noteNumber = frequencyToNoteNumber(frequency);
-                
-                MidiEvent noteOn = createNoteOnEvent(channel, noteNumber, velocity, tick);
-                MidiEvent noteOff = createNoteOffEvent(channel, noteNumber, velocity, tick + ticksPerBeat/2);
-                
+            int iterations = Math.min(player1Freqs.size(), player2Freqs.size());
+            for (int i = 0; i < iterations; i++) {
+                //plays player 1's frequency on this tick
+                MidiEvent noteOn = createNoteOnEvent(0, frequencyToNoteNumber(player1Freqs.get(i)), velocity, tick);
+                MidiEvent noteOff = createNoteOffEvent(0, frequencyToNoteNumber(player1Freqs.get(i)), velocity, tick + ticksPerBeat/2);
+                //plays player 2's frequency on this tick
+                MidiEvent noteOn2 = createNoteOnEvent(1, frequencyToNoteNumber(player2Freqs.get(i)), velocity, tick);
+                MidiEvent noteOff2 = createNoteOffEvent(1, frequencyToNoteNumber(player2Freqs.get(i)), velocity, tick + ticksPerBeat/2);
                 track.add(noteOn);
+                track.add(noteOn2);
                 track.add(noteOff);
-                
-                tick += ticksPerBeat/2;
+                track.add(noteOff2);
+                tick+=ticksPerBeat/2;
             }
-            
+
             // Write the Sequence to a MIDI file
-            File midiFile = new File(fileName.substring(0,fileName.length()-4) + playerNum + ".mid");
+            File midiFile = new File(fileName.substring(0,fileName.length()-4) + ".mid");
             MidiSystem.write(sequence, 1, midiFile);
             
             System.out.println("MIDI file generated successfully.");
