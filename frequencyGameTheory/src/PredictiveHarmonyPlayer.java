@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Plays a note that would harmonize well with the last note the player's opponent played
@@ -30,6 +31,10 @@ public class PredictiveHarmonyPlayer extends Player {
         }
         //need a lower frequency note since a high frequency multiple is not possible
         ArrayList<Integer> factors = findFactors(lastPlayedOpponentNote);
+        Collections.sort(factors);
+        while (factors.get(0) < 28) {
+            factors.remove(0);
+        }
         return factors.get((int) (Math.random()*factors.size()));
     }
 
