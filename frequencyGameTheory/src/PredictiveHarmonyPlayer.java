@@ -23,7 +23,7 @@ public class PredictiveHarmonyPlayer extends Player {
             return ((int) (Math.random() * 4159)) + 28; //plays random note if this is the first note
         }
         //Playing a high frequency note that's a multiple of lastPlayedOpponentNote
-        int maxMultiplicationFactor = ((int) 4186/lastPlayedOpponentNote);
+        int maxMultiplicationFactor = ((int) 4186/lastPlayedOpponentNote) > 9 ? 9 : ((int) 4186/lastPlayedOpponentNote);
         if (maxMultiplicationFactor != 1) { //a high frequency multiple is possible
             int multiplicationFactor = ((int) (Math.random() * (maxMultiplicationFactor-1)) + 2); //between 2 and maxMultiplicationFactor, inclusive
             return lastPlayedOpponentNote * multiplicationFactor;

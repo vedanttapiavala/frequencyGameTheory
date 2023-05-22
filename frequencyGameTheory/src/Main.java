@@ -7,7 +7,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         buildNotesFrequenciesMap();
-        Player p1 = new SimpleReinforcementPlayer();
+        Player p1 = new StepwisePlayer();
         Player p2 = new SimpleReinforcementPlayer();
         String fileName = getFileName(p1, p2);
         BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName))); //will replace file if simulation has already been run
@@ -59,10 +59,10 @@ public class Main {
                 varianceScore = harmonyScore; //makes payoff 0 instead of negative for the first beat
             }
             double payoff = (varianceScore - harmonyScore)/(varianceScore + harmonyScore);
-            if (p1 instanceof SimpleReinforcementPlayer) {
+            if (p1 instanceof SimpleReinforcementPlayer || p1 instanceof StepwisePlayer) {
                 p1.update(payoff);
             }
-            if (p2 instanceof SimpleReinforcementPlayer) {
+            if (p2 instanceof SimpleReinforcementPlayer || p2 instanceof StepwisePlayer) {
                 p2.update(payoff);
             }
             if (p1 instanceof PredictiveHarmonyPlayer) {
@@ -264,7 +264,10 @@ public class Main {
             return "Scale";
         }
         else if (p instanceof PredictiveHarmonyPlayer) {
-            return "PredictiveHarmony";
+            return "Predictive";
+        }
+        else if (p instanceof StepwisePlayer) {
+            return "Stepwise";
         }
         throw new Exception("There's a player type without a file ID");
     }
