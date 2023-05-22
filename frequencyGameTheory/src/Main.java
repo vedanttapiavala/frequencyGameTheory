@@ -9,6 +9,8 @@ public class Main {
         buildNotesFrequenciesMap();
         Player p1 = new StepwisePlayer();
         Player p2 = new SimpleReinforcementPlayer();
+        Player p1 = new ChordPlayer();
+        Player p2 = new ChordPlayer();
         String fileName = getFileName(p1, p2);
         BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName))); //will replace file if simulation has already been run
         ArrayList<int[]> chordProgression = new ArrayList<int[]>(); //every int[] is one chord (usually 4 notes)
@@ -35,12 +37,16 @@ public class Main {
             chordProgression.add(f7);
         }
         ArrayList<Integer> allPastNotes = new ArrayList<Integer>();
+        ArrayList<Integer> p1Freq = new ArrayList<Integer>(); //saves player 1 notes to list
+        ArrayList<Integer> p2Freq = new ArrayList<Integer>(); //saves player 2 notes to list
         int measureNum = -1; // counts the measures
         for (int beatNum = 0; beatNum < 96*8; beatNum++) { // subdividing by eight notes there will be 96 beats in a 12 bar blues
             if (beatNum % 8 == 0) measureNum++; // increments measureNum at the start of every 8 beats --> one measure
             chordProgressionFreq = chordProgression.get(measureNum);
             int freqOne = p1.genNote(); //gets note based on p1's strategy
             int freqTwo = p2.genNote();
+            p1Freq.add(freqOne);
+            p2Freq.add(freqTwo);
             /**
              * weighted average for the current note: chord progression frequency is weighted at 60%
              * Each individual player's played note's frequency is weighted at 20%
@@ -74,6 +80,8 @@ public class Main {
             bw.write(varianceScore + "\t" + harmonyScore + "\t" + payoff + "\n");
             bw.flush();
         }
+        Musician.play(p1Freq, 1, fileName); //generates MIDI files for player 1
+        Musician.play(p2Freq, 2, fileName); //generates MIDI files for player 2
         bw.flush(); //write to relevant notepad
         bw.close(); //prevent resource leaks
     }
