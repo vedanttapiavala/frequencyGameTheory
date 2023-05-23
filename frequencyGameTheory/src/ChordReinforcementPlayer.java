@@ -39,6 +39,7 @@ public class ChordReinforcementPlayer extends Player {
         while (possiblef7Notes.size() > 0) {
             f7Probabilities.put(possiblef7Notes.remove(0), 1.0);
         }
+        probabilities.add(f7Probabilities);
     }
 
     @Override
