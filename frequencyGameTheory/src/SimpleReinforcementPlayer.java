@@ -44,7 +44,9 @@ public class SimpleReinforcementPlayer extends Player {
 
     @Override
     protected void update(double recentPayoff) {
-        //TODO: Make it so that probabilites cannot be negative; if probability is negative, set it to 0
         probabilities[currNoteInd]+=recentPayoff;
+        if (probabilities[currNoteInd] < 0) {
+            probabilities[currNoteInd] = 0;
+        }
     }
 }
