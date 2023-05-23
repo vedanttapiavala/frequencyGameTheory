@@ -64,10 +64,10 @@ public class Main {
                 varianceScore = harmonyScore; //makes payoff 0 instead of negative for the first beat
             }
             double payoff = (varianceScore - harmonyScore)/(varianceScore + harmonyScore);
-            if (p1 instanceof SimpleReinforcementPlayer || p1 instanceof StepwisePlayer || p1 instanceof ChordReinforcementPlayer) {
+            if (p1 instanceof SimpleReinforcementPlayer || p1 instanceof StepwisePlayer || p1 instanceof ChordReinforcementPlayer || p1 instanceof MeasureReinforcementPlayer) {
                 p1.update(payoff);
             }
-            if (p2 instanceof SimpleReinforcementPlayer || p2 instanceof StepwisePlayer || p2 instanceof ChordReinforcementPlayer) {
+            if (p2 instanceof SimpleReinforcementPlayer || p2 instanceof StepwisePlayer || p2 instanceof ChordReinforcementPlayer || p2 instanceof MeasureReinforcementPlayer) {
                 p2.update(payoff);
             }
             if (p1 instanceof PredictiveHarmonyPlayer) {

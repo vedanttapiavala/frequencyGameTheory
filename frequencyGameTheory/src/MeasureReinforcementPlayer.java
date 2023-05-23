@@ -5,7 +5,7 @@ import java.util.Arrays;
  * Same as SimpleReinforcementPlayer but has different probabilities arrays by chord
  */
 public class MeasureReinforcementPlayer extends Player {
-    private double[][] probabilities = new double[Main.notesFreqMap.size()][4];
+    private double[][] probabilities = new double[4][Main.notesFreqMap.size()];
     final int[] bb7 = {116, 147, 175, 208}; 
     final int[] eb7 = {156, 196, 233, 277}; 
     final int[] cm7 = {131, 156, 196, 233};
