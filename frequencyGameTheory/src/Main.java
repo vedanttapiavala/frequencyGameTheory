@@ -7,8 +7,8 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         buildNotesFrequenciesMap();
-        Player p1 = new StepwisePlayer();
-        Player p2 = new StepwisePlayer();
+        Player p1 = new SimpleReinforcementPlayer();
+        Player p2 = new SimpleReinforcementPlayer();
         String fileName = getFileName(p1, p2);
         BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName))); //will replace file if simulation has already been run
         ArrayList<int[]> chordProgression = new ArrayList<int[]>(); //every int[] is one chord (usually 4 notes)
@@ -69,6 +69,12 @@ public class Main {
             }
             if (p2 instanceof SimpleReinforcementPlayer || p2 instanceof StepwisePlayer || p2 instanceof ChordReinforcementPlayer || p2 instanceof MeasureReinforcementPlayer) {
                 p2.update(payoff);
+            }
+            if (p1 instanceof DoubleReinforcementPlayer) {
+                p1.update(payoff, freqTwo);
+            }
+            if (p2 instanceof DoubleReinforcementPlayer) {
+                p2.update(payoff, freqOne);
             }
             if (p1 instanceof PredictiveHarmonyPlayer) {
                 p1.update(freqTwo);
@@ -316,7 +322,10 @@ public class Main {
             return "ChordReinforce";
         }
         else if (p instanceof MeasureReinforcementPlayer) {
-            return "MeasureReinforce";
+            return "Measure";
+        }
+        else if (p instanceof DoubleReinforcementPlayer) {
+            return "Double";
         }
         throw new Exception("There's a player type without a file ID");
     }

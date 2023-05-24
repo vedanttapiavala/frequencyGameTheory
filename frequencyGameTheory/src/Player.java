@@ -8,4 +8,5 @@ abstract class Player {
      * For a predictive harmony player, this would be their opponent's most recently played note
      */
     protected void update(double d) {};
+    protected void update(double d1, double d2) {};
 }
