@@ -22,9 +22,17 @@ public class StepwisePlayer extends Player {
             return currNote;
         }
         if (pastTwoPayoffs.get(1) > 0) { //payoff positive
-            currNote+=((int) (Math.random()*41-20));
+            if (Math.random() < .5) {
+                currNote/=((Math.random()*.1)+1); //divides it by between 1-1.1
+            }
+            else {
+                currNote*=((Math.random()*.1)+1); //multiplies it by between 1-1.1
+            }
             if (currNote < 28) {
-                currNote = 28;
+                currNote = 28; //floor of 28
+            }
+            else if (currNote > 4186) {
+                currNote = 4186; //caps it at 4186
             }
             return currNote;
         }
