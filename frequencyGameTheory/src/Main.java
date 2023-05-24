@@ -7,8 +7,8 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         buildNotesFrequenciesMap();
-        Player p1 = new MeasureReinforcementPlayer();
-        Player p2 = new MeasureReinforcementPlayer();
+        Player p1 = new StepwisePlayer();
+        Player p2 = new StepwisePlayer();
         String fileName = getFileName(p1, p2);
         BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName))); //will replace file if simulation has already been run
         ArrayList<int[]> chordProgression = new ArrayList<int[]>(); //every int[] is one chord (usually 4 notes)
@@ -179,27 +179,61 @@ public class Main {
         notesFreqMap.put("C8", new double[]{4067.20, 4186}); //no notes past 4186
     }
 
+    //variance when not counting octaves as the same note:
+
+    // private static double calcVarianceScore(ArrayList<Integer> allPastNotes) {
+    //     /**
+    //      * Separate past notes played into buckets of actual notes
+    //      * Find frequencies
+    //      * Find variance of those frequencies
+    //      */
+    //     //Separating past notes played into buckets of actual notes
+    //     int[] noteCounts = new int[notesFreqMap.size()];
+    //     for (int x: allPastNotes) {
+    //         int i = 0;
+    //         for (String s: notesFreqMap.keySet()) {
+    //             if (x >= notesFreqMap.get(s)[0] && x <= notesFreqMap.get(s)[1]) {
+    //                 noteCounts[i]++;
+    //                 break;
+    //             }
+    //             i++;
+    //         }
+    //     }
+    //     //Calculating Shannon Diversity Index
+    //     double diversityIndex = 0;
+    //     for (int x: noteCounts) {
+    //         double Pi = (double)x / allPastNotes.size();
+    //         double calc = -Pi*Math.log(Pi); //-Pi * ln(Pi)
+    //         if (Double.isNaN(calc)) {
+    //             calc = 0;
+    //         }
+    //         diversityIndex+=calc;
+    //     }
+    //     return diversityIndex/Math.log(noteCounts.length); //H/Hmax
+    // }
+
+    //counts octaves as the same note
     private static double calcVarianceScore(ArrayList<Integer> allPastNotes) {
-        /**
-         * Separate past notes played into buckets of actual notes
-         * Find frequencies
-         * Find variance of those frequencies
-         */
-        //Separating past notes played into buckets of actual notes
-        int[] noteCounts = new int[notesFreqMap.size()];
+        Map<String, Integer> noteCounts = new HashMap<String, Integer>();
+        final String[] notes = new String[]{"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
+        for (String s: notes) {
+            noteCounts.put(s, 0);
+        }
         for (int x: allPastNotes) {
-            int i = 0;
             for (String s: notesFreqMap.keySet()) {
                 if (x >= notesFreqMap.get(s)[0] && x <= notesFreqMap.get(s)[1]) {
-                    noteCounts[i]++;
-                    break;
+                    for (String note: notes) {
+                        if (s.startsWith(note)) {
+                            noteCounts.put(note, noteCounts.get(note)+1);
+                            break;
+                        }
+                    }
                 }
-                i++;
             }
         }
         //Calculating Shannon Diversity Index
         double diversityIndex = 0;
-        for (int x: noteCounts) {
+        for (int x: noteCounts.values()) {
             double Pi = (double)x / allPastNotes.size();
             double calc = -Pi*Math.log(Pi); //-Pi * ln(Pi)
             if (Double.isNaN(calc)) {
@@ -207,7 +241,7 @@ public class Main {
             }
             diversityIndex+=calc;
         }
-        return diversityIndex/Math.log(noteCounts.length); //H/Hmax
+        return diversityIndex/Math.log(noteCounts.size()); //H/Hmax
     }
 
     private static double calcHarmonyScore(int[] chord, int freqOne, int freqTwo) {
