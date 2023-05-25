@@ -1,10 +1,10 @@
 import java.util.Arrays;
 
 /**
- * Measure Reinforcement Strategy:
+ * ChordSpecific Reinforcement Strategy:
  * Same as SimpleReinforcementPlayer but has different probabilities arrays by chord
  */
-public class MeasureReinforcementPlayer extends Player {
+public class ChordSpecificReinforcementPlayer extends Player {
     private double[][] probabilities = new double[4][Main.notesFreqMap.size()];
     final int[] bb7 = {116, 147, 175, 208}; 
     final int[] eb7 = {156, 196, 233, 277}; 
@@ -13,7 +13,7 @@ public class MeasureReinforcementPlayer extends Player {
 
     private int currNoteInd = 0;
 
-    public MeasureReinforcementPlayer() {
+    public ChordSpecificReinforcementPlayer() {
         super();
         for (int chord = 0; chord < 4; chord++) {
             for (int i = 0; i < probabilities[chord].length; i++) {

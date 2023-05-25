@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class ChordReinforcementPlayer extends Player {
+public class ChordFollowingReinforcementLearning extends Player {
     final int[] bb7 = {116, 147, 175, 208}; // Bb7 -(equal temperament approx.frequencies)-> 116.54(Bb2),146.83(D3), 174.61(F3), Ab(207.65)
     final int[] eb7 = {156, 196, 233, 277}; // Eb7 -(equal temperament approx.frequencies)-> Eb3 	155.56, G3	196.00, Bb3 	233.08, Db4 	277.18
     final int[] cm7 = {131, 156, 196, 233}; // Cm7 -(equal temperament approx.frequencies)-> C3	130.81, Eb3 	155.56, G3	196.00, Bb3 	233.08
@@ -13,7 +13,7 @@ public class ChordReinforcementPlayer extends Player {
     private ArrayList<HashMap<Integer, Double>> probabilities = new ArrayList<HashMap<Integer, Double>>(4);
     private int prevChord, prevNote = 0;
 
-    public ChordReinforcementPlayer() {
+    public ChordFollowingReinforcementLearning() {
         super();
         ArrayList<Integer> possibleBb7Notes = getPossibleNotes(bb7);
         ArrayList<Integer> possibleEb7Notes = getPossibleNotes(eb7);
