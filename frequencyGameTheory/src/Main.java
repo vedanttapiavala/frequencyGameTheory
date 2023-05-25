@@ -7,8 +7,8 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         buildNotesFrequenciesMap();
-        Player p1 = new SimpleReinforcementPlayer();
-        Player p2 = new SimpleReinforcementPlayer();
+        Player p1 = new RandomPlayer();
+        Player p2 = new RandomPlayer();
         String fileName = getFileName(p1, p2);
         BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName))); //will replace file if simulation has already been run
         ArrayList<int[]> chordProgression = new ArrayList<int[]>(); //every int[] is one chord (usually 4 notes)
@@ -58,7 +58,7 @@ public class Main {
                 varianceScore = calcVarianceScore(allPastNotes);
             }
             double harmonyScore = calcHarmonyScore(chordProgressionFreq, freqOne, freqTwo);
-            final double normalizationFactor = 1658.833002; //calculation shown in paper; uses raw variance/harmony scores for normalization
+            final double normalizationFactor = 402.4711341; //calculation shown in paper; uses raw variance/harmony scores from Random vs. Random for normalization
             varianceScore*=normalizationFactor;
             if (beatNum == 0) {
                 varianceScore = harmonyScore; //makes payoff 0 instead of negative for the first beat
@@ -259,33 +259,39 @@ public class Main {
         int sum = 0;
         for (int i = 0; i < allNotes.size()-1; i++) {
             for (int j = i + 1; j < allNotes.size(); j++) {
-                sum+=addNumDenomSimplifiedFraction(allNotes.get(i), allNotes.get(j));
+                sum+=rationalTuning(allNotes.get(i), allNotes.get(j));
             }
         }
         int numTimesOfLoop = (allNotes.size()*(allNotes.size()-1))/2;
         return (int) (Math.round(sum/((double)(numTimesOfLoop))));
     }
 
-    /**
-     * Takes in two integers, x and y
-     * Simplifies the fraction x/y and returns the sum of the numerator and denominator
-     */
-    private static int addNumDenomSimplifiedFraction(int x, int y) {
-        int gcd = findGCD(x,y);
-        return (x/gcd) + (y/gcd);
-    }
-
-    //Credit for Algorithm: Geeks for Geeks
-    //https://www.geeksforgeeks.org/program-to-find-gcd-or-hcf-of-two-numbers/
-    private static int findGCD(int x, int y) {
-        int result = Math.min(x, y);
-        while (result > 0) {
-            if (x % result == 0 && y % result == 0) {
-                break;
+    //Algorithm credit: Stolzenburg 2018
+    private static int rationalTuning(int x, int y) {
+        double d = .01;
+        double xmin = (1-d) * x;
+        double xmax = (1+d) * x;
+        double al = Math.floor(x);
+        double ar = Math.floor(x)+1;
+        double a = Math.floor(x);
+        double br = 1;
+        double bl = 1;
+        double b = 1;
+        while (a/b < xmin || xmax < a/b) {
+            double x0 = 2 * x - a/b;
+            if (x < a/b) {
+                ar = a;
+                br = b;
             }
-            result--;
+            else {
+                double k = Math.floor((x0*bl - al)/(ar - x0*br));
+                ar = (ar + k * al);
+                br = (br + k * bl);
+            }
+            a = (al + ar);
+            b = (bl + br);
         }
-        return result;
+        return (int) (a+b);
     }
 
     /**
