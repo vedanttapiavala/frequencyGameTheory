@@ -7,8 +7,8 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         buildNotesFrequenciesMap();
-        Player p1 = new SimpleReinforcementPlayer();
-        Player p2 = new SimpleReinforcementPlayer();
+        Player p1 = new RandomPlayer();
+        Player p2 = new RandomPlayer();
         String fileName = getFileName(p1, p2);
         BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName))); //will replace file if simulation has already been run
         ArrayList<int[]> chordProgression = new ArrayList<int[]>(); //every int[] is one chord (usually 4 notes)
@@ -58,7 +58,7 @@ public class Main {
                 varianceScore = calcVarianceScore(allPastNotes);
             }
             double harmonyScore = calcHarmonyScore(chordProgressionFreq, freqOne, freqTwo);
-            final double normalizationFactor = 1658.833002; //calculation shown in paper; uses raw variance/harmony scores for normalization
+            final double normalizationFactor = 1208.757106; //calculation shown in paper; uses raw variance/harmony scores for normalization
             varianceScore*=normalizationFactor;
             if (beatNum == 0) {
                 varianceScore = harmonyScore; //makes payoff 0 instead of negative for the first beat
@@ -233,7 +233,7 @@ public class Main {
                             String note = notes[i];
                             if (s.startsWith(note)) {
                                 noteCounts.put(note, noteCounts.get(note)+1);
-                                // System.out.println("Actuall note: " + s);
+                                // System.out.println("Actual note: " + s);
                                 // System.out.println("Recorded Note: " + note);
                                 break;
                             }
