@@ -227,11 +227,26 @@ public class Main {
         }
         for (int x: allPastNotes) {
             for (String s: notesFreqMap.keySet()) {
-                if (x >= notesFreqMap.get(s)[0] && x <= notesFreqMap.get(s)[1]) {
-                    for (String note: notes) {
-                        if (s.startsWith(note)) {
-                            noteCounts.put(note, noteCounts.get(note)+1);
-                            break;
+                if (x >= notesFreqMap.get(s)[0] && x < notesFreqMap.get(s)[1]) {
+                    if (s.contains("#")) {
+                        for (int i =notes.length-1; i >=0; i--) {
+                            String note = notes[i];
+                            if (s.startsWith(note)) {
+                                noteCounts.put(note, noteCounts.get(note)+1);
+                                // System.out.println("Actuall note: " + s);
+                                // System.out.println("Recorded Note: " + note);
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        for (String note : notes) {
+                            if (s.startsWith(note)) {
+                                noteCounts.put(note, noteCounts.get(note)+1);
+                                // System.out.println("Actual note: " + s);
+                                // System.out.println("Recorded Note: " + note);
+                                break;
+                            }
                         }
                     }
                 }
