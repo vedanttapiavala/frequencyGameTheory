@@ -5,10 +5,8 @@ public class Main {
     protected static Map<String, double[]> notesFreqMap;
     protected static int[] chordProgressionFreq;
 
-    public static void main(String[] args) throws Exception {
+    public static double main(Player p1, Player p2) throws Exception {
         buildNotesFrequenciesMap();
-        Player p1 = new RandomPlayer();
-        Player p2 = new RandomPlayer();
         String fileName = getFileName(p1, p2);
         BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName))); //will replace file if simulation has already been run
         ArrayList<int[]> chordProgression = new ArrayList<int[]>(); //every int[] is one chord (usually 4 notes)
@@ -91,6 +89,7 @@ public class Main {
         bw.write("\nAverage Payoff: " + String.format("%.4f", payoffSum/(96.0*8)));
         bw.flush(); //write to relevant notepad
         bw.close(); //prevent resource leaks
+        return payoffSum/(96.0*8);
     }
 
     private static void buildNotesFrequenciesMap() {
