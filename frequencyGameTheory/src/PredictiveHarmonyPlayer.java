@@ -29,6 +29,9 @@ public class PredictiveHarmonyPlayer extends Player {
             int multiplicationFactor = ((int) (Math.random() * (maxMultiplicationFactor-1)) + 2); //between 2 and maxMultiplicationFactor, inclusive
             return lastPlayedOpponentNote * multiplicationFactor;
         }
+        if (isPrime(lastPlayedOpponentNote)) {
+            lastPlayedOpponentNote++;
+        }
         //need a lower frequency note since a high frequency multiple is not possible
         ArrayList<Integer> factors = findFactors(lastPlayedOpponentNote);
         Collections.sort(factors);
@@ -36,6 +39,21 @@ public class PredictiveHarmonyPlayer extends Player {
             factors.remove(0);
         }
         return factors.get((int) (Math.random()*factors.size()));
+    }
+
+    private boolean isPrime(int note) {
+        //Do not need to check if note = 1,2,3 since note>=28
+       if (note % 2 == 0 || note % 3 == 0) {
+        return false;
+       }
+       for (int i = 5; i <= Math.sqrt(note); i+=6)
+       {
+        if (note % i == 0 || note % (i+2) == 0)
+        {
+            return false;
+        }
+       }
+       return true;
     }
 
     private static ArrayList<Integer> findFactors(int note) {
