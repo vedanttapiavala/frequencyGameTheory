@@ -1,7 +1,8 @@
 import java.util.Arrays;
 
 /**
- * ChordSpecific Reinforcement Strategy:
+ * Player class for the Chord-Specific Reinforcement Learning Player
+ * Chord-Specific Reinforcement Learning Strategy:
  * Same as SimpleReinforcementPlayer but has different probabilities arrays by chord
  */
 public class ChordSpecificReinforcementPlayer extends Player {
@@ -22,6 +23,7 @@ public class ChordSpecificReinforcementPlayer extends Player {
         }
     }
 
+    //Generates the next note based on the previously updated weightings
     @Override
     public int genNote() {
         int currChord = Arrays.equals(bb7, Main.chordProgressionFreq) ? 0 : Arrays.equals(eb7, Main.chordProgressionFreq) ? 1 : Arrays.equals(cm7, Main.chordProgressionFreq) ? 2 : 3;
@@ -52,8 +54,10 @@ public class ChordSpecificReinforcementPlayer extends Player {
         return 0;
     }
 
+    //Figures out what chord we're in and then updates that chord's specific probability
     @Override
     protected void update(double recentPayoff) {
+        //Assigns an int for each chord; then used to update the probabilities for the chord that we are currently playing
         int currChord = Arrays.equals(bb7, Main.chordProgressionFreq) ? 0 : Arrays.equals(eb7, Main.chordProgressionFreq) ? 1 : Arrays.equals(cm7, Main.chordProgressionFreq) ? 2 : 3;
         probabilities[currChord][currNoteInd]+=recentPayoff;
         if (probabilities[currChord][currNoteInd] < 0) {

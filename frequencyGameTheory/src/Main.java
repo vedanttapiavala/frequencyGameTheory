@@ -32,7 +32,7 @@ public class Main {
             chordProgression.add(bb7);
             chordProgression.add(f7);
         }
-        ArrayList<Integer> allPastNotes = new ArrayList<Integer>();
+        ArrayList<Integer> allPastNotes = new ArrayList<Integer>(); //saves all notes to list
         ArrayList<Integer> p1Freq = new ArrayList<Integer>(); //saves player 1 notes to list
         ArrayList<Integer> p2Freq = new ArrayList<Integer>(); //saves player 2 notes to list
         double payoffSum = 0.0;
@@ -42,7 +42,7 @@ public class Main {
             chordProgressionFreq = chordProgression.get(measureNum);
             int freqOne = p1.genNote(); //gets note based on p1's strategy
             int freqTwo = p2.genNote();
-            p1Freq.add(freqOne);
+            p1Freq.add(freqOne); //add the note to the correct list
             p2Freq.add(freqTwo);
             /**
              * weighted average for the current note: chord progression frequency is weighted at 60%
@@ -56,12 +56,16 @@ public class Main {
                 varianceScore = calcVarianceScore(allPastNotes);
             }
             double harmonyScore = calcHarmonyScore(chordProgressionFreq, freqOne, freqTwo);
-            final double normalizationFactor = 1208.757106; //calculation shown in paper; uses raw variance/harmony scores for normalization
-            varianceScore*=normalizationFactor;
+            final double multiplicationFactor = 1208.757106; //calculation shown in paper; uses raw variance/harmony scores for normalization
+            varianceScore*=multiplicationFactor;
+            //without this if statement, the initial variance score would be 0, causing a high magnitude negative number to be the first payoff
+            //thus, the first payoff is artificially set to 0
             if (beatNum == 0) {
                 varianceScore = harmonyScore; //makes payoff 0 instead of negative for the first beat
             }
+            //Corresponds to equation for payoff shown in paper; varianceScore was already multiplied by multiplication factor
             double payoff = (varianceScore - harmonyScore)/(varianceScore + harmonyScore);
+            //Updates weightings for Reinforcement Learning algorithms
             if (p1 instanceof SimpleReinforcementPlayer || p1 instanceof StepwisePlayer || p1 instanceof ChordFollowingReinforcementLearning || p1 instanceof ChordSpecificReinforcementPlayer) {
                 p1.update(payoff);
             }
@@ -80,18 +84,21 @@ public class Main {
             if (p2 instanceof PredictiveHarmonyPlayer) {
                 p2.update(freqOne);
             }
+            //writes variance score, harmony score, and payoff for each beat into the generated file
             bw.write(varianceScore + "\t" + harmonyScore + "\t" + payoff + "\n");
             payoffSum+=payoff;
             bw.flush();
         }
         Musician.play(p1Freq, p2Freq, fileName); //generates MIDI files for player 1
-        // Musician.play(p2Freq, 2, fileName); //generates MIDI files for player 2
         bw.write("\nAverage Payoff: " + String.format("%.4f", payoffSum/(96.0*8)));
         bw.flush(); //write to relevant notepad
         bw.close(); //prevent resource leaks
-        return payoffSum/(96.0*8);
+        return payoffSum/(96.0*8); //payoff divided by number of beats = average payoff
     }
 
+    /**
+     * Builds a mapping from any decimal frequency to a note on the piano
+     */
     private static void buildNotesFrequenciesMap() {
         notesFreqMap = new LinkedHashMap<String, double[]>();
         notesFreqMap.put("A0", new double[]{28, 28.31}); //starts at 28 Hz
@@ -184,40 +191,8 @@ public class Main {
         notesFreqMap.put("C8", new double[]{4067.20, 4186}); //no notes past 4186
     }
 
-    //variance when not counting octaves as the same note:
-
-    // private static double calcVarianceScore(ArrayList<Integer> allPastNotes) {
-    //     /**
-    //      * Separate past notes played into buckets of actual notes
-    //      * Find frequencies
-    //      * Find variance of those frequencies
-    //      */
-    //     //Separating past notes played into buckets of actual notes
-    //     int[] noteCounts = new int[notesFreqMap.size()];
-    //     for (int x: allPastNotes) {
-    //         int i = 0;
-    //         for (String s: notesFreqMap.keySet()) {
-    //             if (x >= notesFreqMap.get(s)[0] && x <= notesFreqMap.get(s)[1]) {
-    //                 noteCounts[i]++;
-    //                 break;
-    //             }
-    //             i++;
-    //         }
-    //     }
-    //     //Calculating Shannon Diversity Index
-    //     double diversityIndex = 0;
-    //     for (int x: noteCounts) {
-    //         double Pi = (double)x / allPastNotes.size();
-    //         double calc = -Pi*Math.log(Pi); //-Pi * ln(Pi)
-    //         if (Double.isNaN(calc)) {
-    //             calc = 0;
-    //         }
-    //         diversityIndex+=calc;
-    //     }
-    //     return diversityIndex/Math.log(noteCounts.length); //H/Hmax
-    // }
-
     //counts octaves as the same note
+    //Applies Shannon Diversity Index as mentioned in the paper
     private static double calcVarianceScore(ArrayList<Integer> allPastNotes) {
         Map<String, Integer> noteCounts = new HashMap<String, Integer>();
         final String[] notes = new String[]{"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
@@ -226,14 +201,13 @@ public class Main {
         }
         for (int x: allPastNotes) {
             for (String s: notesFreqMap.keySet()) {
+                //if else necessary so that C and C#, etc. are not counted as the same note
                 if (x >= notesFreqMap.get(s)[0] && x < notesFreqMap.get(s)[1]) {
                     if (s.contains("#")) {
                         for (int i =notes.length-1; i >=0; i--) {
                             String note = notes[i];
                             if (s.startsWith(note)) {
                                 noteCounts.put(note, noteCounts.get(note)+1);
-                                // System.out.println("Actual note: " + s);
-                                // System.out.println("Recorded Note: " + note);
                                 break;
                             }
                         }
@@ -242,8 +216,6 @@ public class Main {
                         for (String note : notes) {
                             if (s.startsWith(note)) {
                                 noteCounts.put(note, noteCounts.get(note)+1);
-                                // System.out.println("Actual note: " + s);
-                                // System.out.println("Recorded Note: " + note);
                                 break;
                             }
                         }
@@ -264,6 +236,7 @@ public class Main {
         return diversityIndex/Math.log(noteCounts.size()); //H/Hmax
     }
 
+    //Calculates harmony score as described in the paper
     private static double calcHarmonyScore(int[] chord, int freqOne, int freqTwo) {
         ArrayList<Integer> allNotes = new ArrayList<Integer>();
         for (int x: chord) {

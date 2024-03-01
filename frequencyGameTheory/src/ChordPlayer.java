@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 /**
+ * Player class for the Chord Following player
  * Only generates notes that are either in the chord or higher/lower octaves of the notes in the current chord
  */
 public class ChordPlayer extends Player {
@@ -8,6 +9,7 @@ public class ChordPlayer extends Player {
         super();
     }
 
+    //Similar to genNote for Chord-Following Reinforcement Learning
     @Override
     public int genNote() {
         ArrayList<Integer> possibleNotes = new ArrayList<Integer>();

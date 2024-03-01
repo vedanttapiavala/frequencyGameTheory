@@ -1,3 +1,6 @@
+/*
+ * Player class for the Randomness player; generates a random note within the simulation range and returns it
+ */
 public class RandomPlayer extends Player {
     public RandomPlayer() {
         super();
