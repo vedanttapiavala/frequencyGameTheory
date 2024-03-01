@@ -1,5 +1,9 @@
 import java.util.*;
 
+/*
+ * Player class for the Chord-Following Reinforcement Learning player
+ */
+
 public class ChordFollowingReinforcementLearning extends Player {
     final int[] bb7 = {116, 147, 175, 208}; // Bb7 -(equal temperament approx.frequencies)-> 116.54(Bb2),146.83(D3), 174.61(F3), Ab(207.65)
     final int[] eb7 = {156, 196, 233, 277}; // Eb7 -(equal temperament approx.frequencies)-> Eb3 	155.56, G3	196.00, Bb3 	233.08, Db4 	277.18
@@ -14,7 +18,7 @@ public class ChordFollowingReinforcementLearning extends Player {
     private int prevChord, prevNote = 0;
 
     public ChordFollowingReinforcementLearning() {
-        super();
+        super(); //instantiate a Player object
         ArrayList<Integer> possibleBb7Notes = getPossibleNotes(bb7);
         ArrayList<Integer> possibleEb7Notes = getPossibleNotes(eb7);
         ArrayList<Integer> possibleCm7Notes = getPossibleNotes(cm7);
@@ -62,6 +66,10 @@ public class ChordFollowingReinforcementLearning extends Player {
         return 0;
     }
 
+    /*
+     * Input: Takes an array of frequencies from a voicing of a chord in a particular octave
+     * Output: ArrayList of all frequencies corresponding to that chord in all octaves allowed within the simulation
+     */
     private ArrayList<Integer> getPossibleNotes(int[] arr) {
         ArrayList<Integer> possibleNotes = new ArrayList<Integer>();
         for (int x: arr) {
@@ -80,6 +88,7 @@ public class ChordFollowingReinforcementLearning extends Player {
         return possibleNotes;
     }
 
+    //Used to update reinforcement learning algorithm weights
     @Override
     protected void update(double recentPayoff) {
         double newProbability = probabilities.get(prevChord).get(prevNote)+recentPayoff;

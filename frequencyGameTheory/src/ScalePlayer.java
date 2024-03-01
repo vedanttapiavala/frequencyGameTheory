@@ -1,3 +1,6 @@
+/*
+ * Player class for the Scale Following player
+ */
 public class ScalePlayer extends Player {
     public ScalePlayer() {
         super();
@@ -65,7 +68,9 @@ public class ScalePlayer extends Player {
         double[] Ab7 = new double[]{3227.88, 3419.84};
 
         double[][] allPossibleNotes = {Bb0, Bb1, Bb2, Bb3, Bb4, Bb5, Bb6, Bb7, C1, C2, C3, C4, C5, C6, C7, C8, D1, D2, D3, D4, D5, D6, D7, Eb1, Eb2, Eb3, Eb4, Eb5, Eb6, Eb7, F1, F2, F3, F4, F5, F6, F7, G1, G2, G3, G4, G5, G6, G7, Ab1, Ab2, Ab3, Ab4, Ab5, Ab6, Ab7};
-        int randChord = ((int) (Math.random() * allPossibleNotes.length));
-        return ((int) (Math.random() * (allPossibleNotes[randChord][1]-allPossibleNotes[randChord][0]+1) + allPossibleNotes[randChord][0]));
+        //picks a random octave of a possible note in the scale
+        int randNoteOctave = ((int) (Math.random() * allPossibleNotes.length));
+        //picks a random integer value to player within this octave range
+        return ((int) (Math.random() * (allPossibleNotes[randNoteOctave][1]-allPossibleNotes[randNoteOctave][0]+1) + allPossibleNotes[randNoteOctave][0]));
     }
 }

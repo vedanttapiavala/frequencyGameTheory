@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
+ * Player class for the Harmony Prediction player
  * Plays a note that would harmonize well with the last note the player's opponent played
  */
 public class PredictiveHarmonyPlayer extends Player {
@@ -29,6 +30,12 @@ public class PredictiveHarmonyPlayer extends Player {
             int multiplicationFactor = ((int) (Math.random() * (maxMultiplicationFactor-1)) + 2); //between 2 and maxMultiplicationFactor, inclusive
             return lastPlayedOpponentNote * multiplicationFactor;
         }
+        //As mentioned in the paper, 1 is added to the last played opponent note if that note were prime
+        //Otherwise, the Harmony Prediction player would be stuck on this note
+        //This error would be most significant for 2 players both playing the Harmony Prediction strategies and causes an extremely high standard deviation
+        if (isPrime(lastPlayedOpponentNote)) {
+            lastPlayedOpponentNote++;
+        }
         //need a lower frequency note since a high frequency multiple is not possible
         ArrayList<Integer> factors = findFactors(lastPlayedOpponentNote);
         Collections.sort(factors);
@@ -36,6 +43,21 @@ public class PredictiveHarmonyPlayer extends Player {
             factors.remove(0);
         }
         return factors.get((int) (Math.random()*factors.size()));
+    }
+
+    private boolean isPrime(int note) {
+        //Do not need to check if note = 1,2,3 since note>=28
+       if (note % 2 == 0 || note % 3 == 0) {
+        return false;
+       }
+       for (int i = 5; i <= Math.sqrt(note); i+=6)
+       {
+        if (note % i == 0 || note % (i+2) == 0)
+        {
+            return false;
+        }
+       }
+       return true;
     }
 
     private static ArrayList<Integer> findFactors(int note) {

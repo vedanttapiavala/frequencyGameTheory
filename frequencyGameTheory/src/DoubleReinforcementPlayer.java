@@ -1,4 +1,5 @@
 /**
+ * Player class for Two-Player Reinforcement Learning player
  * Double Reinforcement Strategy:
  * Starts as a random player but updates the probability by notes working/not working well for both it and its opponent
  */
@@ -42,6 +43,7 @@ public class DoubleReinforcementPlayer extends Player {
         return 0;
     }
 
+    //Updates reinforcement learning algorithm weightings based on both recently played notes and the recent payoff
     @Override
     protected void update(double recentPayoff, double opponentNoteFreq) {
         //find the index of the note that corresponds to opponentNoteFreq

@@ -1,8 +1,10 @@
 /**
+ * Player class for Simple Reinforcement player
  * Simple Reinforcement Strategy:
  * Starts as a random player but updates the probability by notes working/not working well
  */
 public class SimpleReinforcementPlayer extends Player {
+    //weighting for Simple Reinforcement Player
     private double[] probabilities = new double[Main.notesFreqMap.size()];
     private int currNoteInd = 0;
 

@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 /**
+ * Player class for Stepwise Change player
  * If last payoff was positive, shift the frequency slightly
  * Otherwise, play the same note in a different octave
  */
