@@ -5,7 +5,7 @@ public class Main {
     protected static Map<String, double[]> notesFreqMap;
     protected static int[] chordProgressionFreq;
 
-    public static double main(Player p1, Player p2) throws Exception {
+    public static double main(Player p1, Player p2, int numLoops) throws Exception {
         buildNotesFrequenciesMap();
         String fileName = getFileName(p1, p2);
         BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName))); //will replace file if simulation has already been run
@@ -18,7 +18,7 @@ public class Main {
          * Add the chords in the right order
          * 12 bar Bb blues progression: Bb7, Eb7, Bb7, Bb7, Eb7, Eb7, Bb7, Bb7, Cm7, F7, Bb7, F7
          */
-        for (int i = 0; i < 8; i++) { //goes through chord 8 times
+        for (int i = 0; i < numLoops; i++) { //goes through chord progression numLoops times
             chordProgression.add(bb7);
             chordProgression.add(eb7);
             chordProgression.add(bb7);
@@ -37,7 +37,7 @@ public class Main {
         ArrayList<Integer> p2Freq = new ArrayList<Integer>(); //saves player 2 notes to list
         double payoffSum = 0.0;
         int measureNum = -1; // counts the measures
-        for (int beatNum = 0; beatNum < 96*8; beatNum++) { // subdividing by eight notes there will be 96 beats in a 12 bar blues
+        for (int beatNum = 0; beatNum < 96*numLoops; beatNum++) { // subdividing by eight notes there will be 96 beats in a 12 bar blues
             if (beatNum % 8 == 0) measureNum++; // increments measureNum at the start of every 8 beats --> one measure
             chordProgressionFreq = chordProgression.get(measureNum);
             int freqOne = p1.genNote(); //gets note based on p1's strategy
@@ -90,10 +90,10 @@ public class Main {
             bw.flush();
         }
         Musician.play(p1Freq, p2Freq, fileName); //generates MIDI files for player 1
-        bw.write("\nAverage Payoff: " + String.format("%.4f", payoffSum/(96.0*8)));
+        bw.write("\nAverage Payoff: " + String.format("%.4f", payoffSum/(96.0*numLoops)));
         bw.flush(); //write to relevant notepad
         bw.close(); //prevent resource leaks
-        return payoffSum/(96.0*8); //payoff divided by number of beats = average payoff
+        return payoffSum/(96.0*numLoops); //payoff divided by number of beats = average payoff
     }
 
     /**
@@ -251,6 +251,7 @@ public class Main {
         }
         int numTimesOfLoop = (allNotes.size()*(allNotes.size()-1))/2;
         return (int) (Math.round(sum/((double)(numTimesOfLoop))));
+        
     }
 
     /**
@@ -258,21 +259,9 @@ public class Main {
      * Simplifies the fraction x/y and returns the sum of the numerator and denominator
      */
     private static int addNumDenomSimplifiedFraction(int x, int y) {
-        int gcd = findGCD(x,y);
-        return (x/gcd) + (y/gcd);
-    }
-
-    //Credit for Algorithm: Geeks for Geeks
-    //https://www.geeksforgeeks.org/program-to-find-gcd-or-hcf-of-two-numbers/
-    private static int findGCD(int x, int y) {
-        int result = Math.min(x, y);
-        while (result > 0) {
-            if (x % result == 0 && y % result == 0) {
-                break;
-            }
-            result--;
-        }
-        return result;
+        double ratio = (double)x / (double)y;
+        int[] fraction = SternBrocot.sternBrocot(ratio, 0.01); // we use 1% error due to human recognizable deviation
+        return (fraction[0]) + (fraction[1]);
     }
 
     /**
