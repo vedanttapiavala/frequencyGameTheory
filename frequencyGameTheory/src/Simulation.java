@@ -58,6 +58,6 @@ public class Simulation {
 
         p1 = new ChordSpecificReinforcementPlayer();
         p2 = new ChordSpecificReinforcementPlayer();
-        System.out.println(Main.main(p1, p2, 128));
+        System.out.println(Main.main(p1, p2, 512));
     }
 }

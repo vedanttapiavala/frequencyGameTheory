@@ -7,7 +7,7 @@ public class ScalePlayer extends Player {
     }
 
     @Override
-    public int genNote() {
+    public double genNote() {
         //Bb mixolydian scale includes all octaves of Bb, C, D, Eb, F, G, Ab
         double[] Bb0 = new double[]{28.31, 29.99};
         double[] Bb1 = new double[]{56.61, 60.00};
@@ -71,6 +71,6 @@ public class ScalePlayer extends Player {
         //picks a random octave of a possible note in the scale
         int randNoteOctave = ((int) (Math.random() * allPossibleNotes.length));
         //picks a random integer value to player within this octave range
-        return ((int) (Math.random() * (allPossibleNotes[randNoteOctave][1]-allPossibleNotes[randNoteOctave][0]+1) + allPossibleNotes[randNoteOctave][0]));
+        return ((Math.random() * (allPossibleNotes[randNoteOctave][1]-allPossibleNotes[randNoteOctave][0]+1) + allPossibleNotes[randNoteOctave][0]));
     }
 }

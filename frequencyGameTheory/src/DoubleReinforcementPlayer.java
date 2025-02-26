@@ -15,7 +15,7 @@ public class DoubleReinforcementPlayer extends Player {
     }
 
     @Override
-    public int genNote() {
+    public double genNote() {
         double probabilitySum = 0;
         for (double x: probabilities) {
             probabilitySum+=x;
@@ -34,7 +34,7 @@ public class DoubleReinforcementPlayer extends Player {
             if (i == index) {
                 double[] possibleNoteRange = Main.notesFreqMap.get(s); //possibleNoteRange[0] is the lowest bound, possibleNoteRange[1] is the highest
                 currNoteInd = i;
-                return ((int) (Math.random() * (possibleNoteRange[1]-possibleNoteRange[0]+1) + possibleNoteRange[0]));
+                return ((Math.random() * (possibleNoteRange[1]-possibleNoteRange[0]+1) + possibleNoteRange[0]));
             }
             else {
                 i++;
