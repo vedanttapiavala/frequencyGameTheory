@@ -56,7 +56,7 @@ public class Main {
                 varianceScore = calcVarianceScore(allPastNotes);
             }
             double harmonyScore = calcHarmonyScore(chordProgressionFreq, freqOne, freqTwo);
-            final double multiplicationFactor = 17.7; //calculation shown in paper; uses raw variance/harmony scores for normalization
+            final double multiplicationFactor = 17.7; //17.7 --> calculation shown in paper; uses raw variance/harmony scores for normalization
             varianceScore*=multiplicationFactor;
             //without this if statement, the initial variance score would be 0, causing a high magnitude negative number to be the first payoff
             //thus, the first payoff is artificially set to 0
@@ -66,7 +66,7 @@ public class Main {
             //Corresponds to equation for payoff shown in paper; varianceScore was already multiplied by multiplication factor
             double payoff = (varianceScore - harmonyScore)/(varianceScore + harmonyScore);
             //Updates weightings for Reinforcement Learning algorithms
-            if (p1 instanceof SimpleReinforcementPlayer || p1 instanceof StepwisePlayer || p1 instanceof ChordFollowingReinforcementLearning || p1 instanceof ChordSpecificReinforcementPlayer) {
+            if (p1 instanceof SimpleReinforcementPlayer || p1 instanceof StepwisePlayer || p1 instanceof ChordFollowingReinforcementLearning || p1 instanceof ChordSpecificReinforcementPlayer || p1 instanceof ChordSpecificMarkovPlayer) {
                 p1.update(payoff);
             }
             if (p2 instanceof SimpleReinforcementPlayer || p2 instanceof StepwisePlayer || p2 instanceof ChordFollowingReinforcementLearning || p2 instanceof ChordSpecificReinforcementPlayer) {
@@ -302,6 +302,9 @@ public class Main {
         }
         else if (p instanceof DoubleReinforcementPlayer) {
             return "Double";
+        }
+        else if (p instanceof ChordSpecificMarkovPlayer) {
+            return "Markov";
         }
         throw new Exception("There's a player type without a file ID");
     }

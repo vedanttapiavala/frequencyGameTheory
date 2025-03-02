@@ -56,8 +56,26 @@ public class Simulation {
         Player p2 = new RandomPlayer();
         System.out.println(Main.main(p1, p2, 8));
 
-        p1 = new ChordSpecificReinforcementPlayer();
-        p2 = new ChordSpecificReinforcementPlayer();
-        System.out.println(Main.main(p1, p2, 512));
+        // p1 = new ChordSpecificMarkovPlayer();
+        // p2 = new ChordSpecificMarkovPlayer();
+
+        ChordSpecificMarkovPlayer player1 = new ChordSpecificMarkovPlayer();
+        ChordSpecificMarkovPlayer player2 = new ChordSpecificMarkovPlayer();
+        double[][][] probs1 = player1.getProbabilities();
+        double[][][] probs2 = player2.getProbabilities();
+        System.out.println(Main.main(player1, player2, 256));
+
+        System.out.println("---------------- PROBS1 ------------------------");
+        for (int i = 0; i < probs1.length; i++) {
+            System.out.println("Chord: " + i);
+            for (int j = 0; j < probs1[i].length; j++) {
+                for (int k = 0; k < probs1[i][j].length; k++) {
+                    System.out.print(probs1[i][j][k] + ",");
+                }
+                if (j != probs1[i].length-1 || i != probs1.length-1) {
+                    System.out.println("-------------------------------------------");
+                }
+            }
+        }
     }
 }
