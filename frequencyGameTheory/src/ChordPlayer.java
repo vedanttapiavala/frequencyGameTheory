@@ -11,21 +11,21 @@ public class ChordPlayer extends Player {
 
     //Similar to genNote for Chord-Following Reinforcement Learning
     @Override
-    public int genNote() {
-        ArrayList<Integer> possibleNotes = new ArrayList<Integer>();
-        for (int x: Main.chordProgressionFreq) {
-            int higherOctave = x*2;
-            while (higherOctave <= 4186) {
+    public double genNote() {
+        ArrayList<Double> possibleNotes = new ArrayList<Double>();
+        for (double x: Main.chordProgressionFreq) {
+            double higherOctave = x*2;
+            while (higherOctave <= 4186.01) { // highest possible is 4186.01
                 possibleNotes.add(higherOctave);
                 higherOctave*=2;
             }
             double lowerOctave = x/2.0;
-            while (lowerOctave >= 28) {
-                possibleNotes.add((int) lowerOctave);
+            while (lowerOctave >= 27.5) { // lowest possible is 27.5
+                possibleNotes.add(lowerOctave);
                 lowerOctave/=2.0;
             }
             possibleNotes.add(x);
         }
-        return possibleNotes.get((int) (Math.random()*possibleNotes.size())); //returns random int from possible notes
+        return possibleNotes.get((int) (Math.random()*possibleNotes.size())); //returns random double from possible notes
     }
 }

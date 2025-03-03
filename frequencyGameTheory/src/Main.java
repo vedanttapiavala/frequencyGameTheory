@@ -3,22 +3,22 @@ import java.util.*; //ArrayList, HashMap, and Map
 
 public class Main {
     protected static Map<String, double[]> notesFreqMap;
-    protected static int[] chordProgressionFreq;
+    protected static double[] chordProgressionFreq;
 
-    public static double main(Player p1, Player p2) throws Exception {
+    public static double main(Player p1, Player p2, int numLoops) throws Exception {
         buildNotesFrequenciesMap();
         String fileName = getFileName(p1, p2);
         BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName))); //will replace file if simulation has already been run
-        ArrayList<int[]> chordProgression = new ArrayList<int[]>(); //every int[] is one chord (usually 4 notes)
-        int[] bb7 = {116, 147, 175, 208}; // Bb7 -(equal temperament approx.frequencies)-> 116.54(Bb2),146.83(D3), 174.61(F3), Ab(207.65)
-        int[] eb7 = {156, 196, 233, 277}; // Eb7 -(equal temperament approx.frequencies)-> Eb3 	155.56, G3	196.00, Bb3 	233.08, Db4 	277.18
-        int[] cm7 = {131, 156, 196, 233}; // Cm7 -(equal temperament approx.frequencies)-> C3	130.81, Eb3 	155.56, G3	196.00, Bb3 	233.08
-        int[] f7 = {175, 220, 262, 311}; // F7 -(equal temperament approx.frequencies)-> F3	174.61, A3	220.00, C4	261.63, Eb4 	311.13
+        ArrayList<double[]> chordProgression = new ArrayList<double[]>(); //every int[] is one chord (usually 4 notes)
+        double[] bb7 = {116.54, 147.83, 174.61, 207.65}; // Bb7 -(equal temperament approx.frequencies)-> 116.54(Bb2),146.83(D3), 174.61(F3), Ab(207.65)
+        double[] eb7 = {155.56, 196.0, 233.08, 277.18}; // Eb7 -(equal temperament approx.frequencies)-> Eb3 155.56, G3 196.00, Bb3 233.08, Db4 277.18
+        double[] cm7 = {130.81, 155.56, 196.0, 233.08}; // Cm7 -(equal temperament approx.frequencies)-> C3 130.81, Eb3 155.56, G3 196.00, Bb3 233.08
+        double[] f7 = {174.61, 220.0, 261.63, 311.13}; // F7 -(equal temperament approx.frequencies)-> F3	174.61, A3 220.00, C4 261.63, Eb4 311.13
         /**
          * Add the chords in the right order
          * 12 bar Bb blues progression: Bb7, Eb7, Bb7, Bb7, Eb7, Eb7, Bb7, Bb7, Cm7, F7, Bb7, F7
          */
-        for (int i = 0; i < 8; i++) { //goes through chord 8 times
+        for (int i = 0; i < numLoops; i++) { //goes through chord progression numLoops times
             chordProgression.add(bb7);
             chordProgression.add(eb7);
             chordProgression.add(bb7);
@@ -32,16 +32,16 @@ public class Main {
             chordProgression.add(bb7);
             chordProgression.add(f7);
         }
-        ArrayList<Integer> allPastNotes = new ArrayList<Integer>(); //saves all notes to list
-        ArrayList<Integer> p1Freq = new ArrayList<Integer>(); //saves player 1 notes to list
-        ArrayList<Integer> p2Freq = new ArrayList<Integer>(); //saves player 2 notes to list
+        ArrayList<Double> allPastNotes = new ArrayList<Double>(); //saves all notes to list
+        ArrayList<Double> p1Freq = new ArrayList<Double>(); //saves player 1 notes to list
+        ArrayList<Double> p2Freq = new ArrayList<Double>(); //saves player 2 notes to list
         double payoffSum = 0.0;
         int measureNum = -1; // counts the measures
-        for (int beatNum = 0; beatNum < 96*8; beatNum++) { // subdividing by eight notes there will be 96 beats in a 12 bar blues
+        for (int beatNum = 0; beatNum < 96*numLoops; beatNum++) { // subdividing by eight notes there will be 96 beats in a 12 bar blues
             if (beatNum % 8 == 0) measureNum++; // increments measureNum at the start of every 8 beats --> one measure
             chordProgressionFreq = chordProgression.get(measureNum);
-            int freqOne = p1.genNote(); //gets note based on p1's strategy
-            int freqTwo = p2.genNote();
+            double freqOne = p1.genNote(); //gets note based on p1's strategy
+            double freqTwo = p2.genNote();
             p1Freq.add(freqOne); //add the note to the correct list
             p2Freq.add(freqTwo);
             /**
@@ -56,7 +56,7 @@ public class Main {
                 varianceScore = calcVarianceScore(allPastNotes);
             }
             double harmonyScore = calcHarmonyScore(chordProgressionFreq, freqOne, freqTwo);
-            final double multiplicationFactor = 1208.757106; //calculation shown in paper; uses raw variance/harmony scores for normalization
+            final double multiplicationFactor = 17.7; //17.7 --> calculation shown in paper; uses raw variance/harmony scores for normalization
             varianceScore*=multiplicationFactor;
             //without this if statement, the initial variance score would be 0, causing a high magnitude negative number to be the first payoff
             //thus, the first payoff is artificially set to 0
@@ -66,7 +66,7 @@ public class Main {
             //Corresponds to equation for payoff shown in paper; varianceScore was already multiplied by multiplication factor
             double payoff = (varianceScore - harmonyScore)/(varianceScore + harmonyScore);
             //Updates weightings for Reinforcement Learning algorithms
-            if (p1 instanceof SimpleReinforcementPlayer || p1 instanceof StepwisePlayer || p1 instanceof ChordFollowingReinforcementLearning || p1 instanceof ChordSpecificReinforcementPlayer) {
+            if (p1 instanceof SimpleReinforcementPlayer || p1 instanceof StepwisePlayer || p1 instanceof ChordFollowingReinforcementLearning || p1 instanceof ChordSpecificReinforcementPlayer || p1 instanceof ChordSpecificMarkovPlayer) {
                 p1.update(payoff);
             }
             if (p2 instanceof SimpleReinforcementPlayer || p2 instanceof StepwisePlayer || p2 instanceof ChordFollowingReinforcementLearning || p2 instanceof ChordSpecificReinforcementPlayer) {
@@ -90,10 +90,10 @@ public class Main {
             bw.flush();
         }
         Musician.play(p1Freq, p2Freq, fileName); //generates MIDI files for player 1
-        bw.write("\nAverage Payoff: " + String.format("%.4f", payoffSum/(96.0*8)));
+        bw.write("\nAverage Payoff: " + String.format("%.4f", payoffSum/(96.0*numLoops)));
         bw.flush(); //write to relevant notepad
         bw.close(); //prevent resource leaks
-        return payoffSum/(96.0*8); //payoff divided by number of beats = average payoff
+        return payoffSum/(96.0*numLoops); //payoff divided by number of beats = average payoff
     }
 
     /**
@@ -193,13 +193,13 @@ public class Main {
 
     //counts octaves as the same note
     //Applies Shannon Diversity Index as mentioned in the paper
-    private static double calcVarianceScore(ArrayList<Integer> allPastNotes) {
+    private static double calcVarianceScore(ArrayList<Double> allPastNotes) {
         Map<String, Integer> noteCounts = new HashMap<String, Integer>();
         final String[] notes = new String[]{"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
         for (String s: notes) {
             noteCounts.put(s, 0);
         }
-        for (int x: allPastNotes) {
+        for (double x: allPastNotes) {
             for (String s: notesFreqMap.keySet()) {
                 //if else necessary so that C and C#, etc. are not counted as the same note
                 if (x >= notesFreqMap.get(s)[0] && x < notesFreqMap.get(s)[1]) {
@@ -237,9 +237,9 @@ public class Main {
     }
 
     //Calculates harmony score as described in the paper
-    private static double calcHarmonyScore(int[] chord, int freqOne, int freqTwo) {
-        ArrayList<Integer> allNotes = new ArrayList<Integer>();
-        for (int x: chord) {
+    private static double calcHarmonyScore(double[] chord, double freqOne, double freqTwo) {
+        ArrayList<Double> allNotes = new ArrayList<Double>();
+        for (double x: chord) {
             allNotes.add(x);
         }
         allNotes.add(freqOne); allNotes.add(freqTwo);
@@ -251,28 +251,17 @@ public class Main {
         }
         int numTimesOfLoop = (allNotes.size()*(allNotes.size()-1))/2;
         return (int) (Math.round(sum/((double)(numTimesOfLoop))));
+        
     }
 
     /**
-     * Takes in two integers, x and y
-     * Simplifies the fraction x/y and returns the sum of the numerator and denominator
+     * Takes in two doubles, x and y
+     * Finds the simplest fraction p/q within 1% of x/y and returns the sum of the numerator and denominator
      */
-    private static int addNumDenomSimplifiedFraction(int x, int y) {
-        int gcd = findGCD(x,y);
-        return (x/gcd) + (y/gcd);
-    }
-
-    //Credit for Algorithm: Geeks for Geeks
-    //https://www.geeksforgeeks.org/program-to-find-gcd-or-hcf-of-two-numbers/
-    private static int findGCD(int x, int y) {
-        int result = Math.min(x, y);
-        while (result > 0) {
-            if (x % result == 0 && y % result == 0) {
-                break;
-            }
-            result--;
-        }
-        return result;
+    private static int addNumDenomSimplifiedFraction(double x, double y) {
+        double ratio = x / y;
+        int[] fraction = SternBrocot.sternBrocot(ratio, 0.01); // we use 1% error due to human recognizable deviation
+        return (fraction[0]) + (fraction[1]);
     }
 
     /**
@@ -313,6 +302,9 @@ public class Main {
         }
         else if (p instanceof DoubleReinforcementPlayer) {
             return "Double";
+        }
+        else if (p instanceof ChordSpecificMarkovPlayer) {
+            return "Markov";
         }
         throw new Exception("There's a player type without a file ID");
     }

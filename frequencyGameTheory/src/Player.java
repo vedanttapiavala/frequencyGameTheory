@@ -1,7 +1,7 @@
 abstract class Player {
     public Player() {}
 
-    abstract public int genNote();
+    abstract public double genNote();
     /*
      * Sends information from the Main.java to the player
      * For reinforcement learning players, this would be the most recent payoff so that they can take that into account
