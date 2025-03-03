@@ -63,7 +63,7 @@ public class Simulation {
         ChordSpecificMarkovPlayer player2 = new ChordSpecificMarkovPlayer();
         double[][][] probs1 = player1.getProbabilities();
         double[][][] probs2 = player2.getProbabilities();
-        System.out.println(Main.main(player1, player2, 256));
+        System.out.println(Main.main(player1, player2, 128));
 
         System.out.println("---------------- PROBS1 ------------------------");
         for (int i = 0; i < probs1.length; i++) {

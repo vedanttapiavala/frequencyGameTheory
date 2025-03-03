@@ -52,16 +52,16 @@ public class ChordSpecificMarkovPlayer extends Player {
         //Assigns an int for each chord; then used to update the probabilities for the chord that we are currently playing
         int currChord = Arrays.equals(bb7, Main.chordProgressionFreq) ? 0 : Arrays.equals(eb7, Main.chordProgressionFreq) ? 1 : Arrays.equals(cm7, Main.chordProgressionFreq) ? 2 : 3;
         //Adds a baseline update of note probabilites for each initial note (increases speed of learning)
-        double baseLinePayoff = 0.5 * recentPayoff;
-        for (int i = 0; i < probabilities[currChord].length; i++) {
-          probabilities[currChord][i][currNoteInd[1]]+=baseLinePayoff;
-          if (probabilities[currChord][i][currNoteInd[1]] < 0) {
-              probabilities[currChord][i][currNoteInd[1]] = 0;
-          }
-        }
+        // double baseLinePayoff = 0.5 * recentPayoff;
+        // for (int i = 0; i < probabilities[currChord].length; i++) {
+        //   probabilities[currChord][i][currNoteInd[1]]+=baseLinePayoff;
+        //   if (probabilities[currChord][i][currNoteInd[1]] < 0) {
+        //       probabilities[currChord][i][currNoteInd[1]] = 0;
+        //   }
+        // }
         //Updates transition probability from prevNote to currNote if prevNote exists
         if (currNoteInd[0] != -1) {
-            probabilities[currChord][currNoteInd[0]][currNoteInd[1]] += 0.5 * recentPayoff;
+            probabilities[currChord][currNoteInd[0]][currNoteInd[1]] += recentPayoff;
             if (probabilities[currChord][currNoteInd[0]][currNoteInd[1]] < 0.0) {
                 probabilities[currChord][currNoteInd[0]][currNoteInd[1]] = 0.0;
             }
