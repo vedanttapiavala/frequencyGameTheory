@@ -66,16 +66,20 @@ public class Simulation {
         System.out.println(Main.main(player1, player2, 128));
 
         System.out.println("---------------- PROBS1 ------------------------");
+        BufferedWriter bw = new BufferedWriter(new FileWriter(new File("Chord Specific Markov Probabilities.txt")));
         for (int i = 0; i < probs1.length; i++) {
-            System.out.println("Chord: " + i);
+            bw.write("Chord: " + i);
             for (int j = 0; j < probs1[i].length; j++) {
                 for (int k = 0; k < probs1[i][j].length; k++) {
-                    System.out.print(probs1[i][j][k] + ",");
+                    bw.write(probs1[i][j][k] + ",");
                 }
                 if (j != probs1[i].length-1 || i != probs1.length-1) {
-                    System.out.println("-------------------------------------------");
+                    bw.write("\n");
                 }
             }
+            bw.flush();
         }
+        bw.flush();
+        bw.close();
     }
 }
