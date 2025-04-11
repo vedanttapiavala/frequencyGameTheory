@@ -47,13 +47,7 @@ public class DoubleReinforcementPlayer extends Player {
     @Override
     protected void update(double recentPayoff, double opponentNoteFreq) {
         //find the index of the note that corresponds to opponentNoteFreq
-        int opponentNoteInd = 0;
-        for (String s: Main.notesFreqMap.keySet()) {
-            if (opponentNoteFreq >= Main.notesFreqMap.get(s)[0] && opponentNoteFreq <= Main.notesFreqMap.get(s)[1]) {
-                break;
-            }
-            opponentNoteInd++;
-        }
+        int opponentNoteInd = Util.freqToNote(opponentNoteFreq);
         probabilities[currNoteInd]+=recentPayoff;
         if (probabilities[currNoteInd] < 0) {
             probabilities[currNoteInd] = 0; //floor of probability is 0

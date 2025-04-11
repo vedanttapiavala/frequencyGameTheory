@@ -10,7 +10,7 @@ public class StepwisePlayer extends Player {
     private ArrayList<Double> pastTwoPayoffs;
     public StepwisePlayer() {
         super();
-        currNote = Math.pow(2, (((int) (Math.random() * 88)) / 12.0)) * 27.5;
+        currNote = Util.noteToFreq((int) (Math.random() * 88));
         pastTwoPayoffs = new ArrayList<Double>();
     }
 
@@ -18,7 +18,7 @@ public class StepwisePlayer extends Player {
     public double genNote()  {
         if (pastTwoPayoffs.size() == 0 || pastTwoPayoffs.size() == 1) {
             if (pastTwoPayoffs.size() == 0) {
-                currNote = Math.pow(2, (((int) (Math.random() * 88)) / 12.0)) * 27.5;
+                currNote = Util.noteToFreq((int) (Math.random() * 88));
             }
             return currNote;
         }

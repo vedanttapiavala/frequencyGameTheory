@@ -1,19 +1,14 @@
-// Implement Stern-Brocot
-// Time Complexity: O(log(max(a, b)))
-// Space Complexity: O(1)
-
-import java.util.*;
-// import java.lang.*;
-
-public class SternBrocot {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        double x = sc.nextDouble(), d = sc.nextDouble();
-        System.out.println(sternBrocot(x, d));
-        sc.close();
+public class Util {
+    // Takes note on the piano (from 0-87) and returns equal temperament frequency
+    public static double noteToFreq(int note) {
+      return Math.pow(2, ((note) / 12.0)) * 27.5; //range from 27.5 to 4186.01 (88 keys on the piano)
     }
 
- 
+    // Takes frequency and converts to closest integer note on the piano (numbered 0-87)
+    public static int freqToNote(double freq) {
+      return (int) Math.round(Math.log(freq / 27.5) / Math.log(2.0) * 12);
+    }
+
     /*
      * Args:
      *  x: the decimal being approximated by a fraction
@@ -56,6 +51,6 @@ public class SternBrocot {
 
         return new int[]{ta, tb};
     }
+
+
 }
-
-

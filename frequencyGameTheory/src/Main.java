@@ -7,6 +7,8 @@ public class Main {
 
     public static double main(Player p1, Player p2, int numLoops) throws Exception {
         buildNotesFrequenciesMap();
+        Score harmScore = new FlexibleHarmonyScore();
+        Score varScore = new VarianceScore();
         String fileName = getFileName(p1, p2);
         BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName))); //will replace file if simulation has already been run
         ArrayList<double[]> chordProgression = new ArrayList<double[]>(); //every int[] is one chord (usually 4 notes)
@@ -32,7 +34,6 @@ public class Main {
             chordProgression.add(bb7);
             chordProgression.add(f7);
         }
-        ArrayList<Double> allPastNotes = new ArrayList<Double>(); //saves all notes to list
         ArrayList<Double> p1Freq = new ArrayList<Double>(); //saves player 1 notes to list
         ArrayList<Double> p2Freq = new ArrayList<Double>(); //saves player 2 notes to list
         double payoffSum = 0.0;
@@ -44,19 +45,13 @@ public class Main {
             double freqTwo = p2.genNote();
             p1Freq.add(freqOne); //add the note to the correct list
             p2Freq.add(freqTwo);
-            /**
-             * weighted average for the current note: chord progression frequency is weighted at 60%
-             * Each individual player's played note's frequency is weighted at 20%
-             **/
-            allPastNotes.add(freqOne);
-            allPastNotes.add(freqTwo);
-            double varianceScore = 0;
-            if (beatNum != 0) {
+            double varianceScore = varScore.calcScore(chordProgressionFreq, p1Freq, p2Freq);
+            if (beatNum == 0) {
                 //calculate payoff in here
-                varianceScore = calcVarianceScore(allPastNotes);
+                varianceScore = 0;
             }
-            double harmonyScore = calcHarmonyScore(chordProgressionFreq, freqOne, freqTwo);
-            final double multiplicationFactor = 17.7; //17.7 --> calculation shown in paper; uses raw variance/harmony scores for normalization
+            double harmonyScore = harmScore.calcScore(chordProgressionFreq, p1Freq, p2Freq);
+            final double multiplicationFactor = 17.68731856; //calculation shown in paper; uses raw variance/harmony scores for normalization
             varianceScore*=multiplicationFactor;
             //without this if statement, the initial variance score would be 0, causing a high magnitude negative number to be the first payoff
             //thus, the first payoff is artificially set to 0
@@ -69,7 +64,7 @@ public class Main {
             if (p1 instanceof SimpleReinforcementPlayer || p1 instanceof StepwisePlayer || p1 instanceof ChordFollowingReinforcementLearning || p1 instanceof ChordSpecificReinforcementPlayer || p1 instanceof ChordSpecificMarkovPlayer) {
                 p1.update(payoff);
             }
-            if (p2 instanceof SimpleReinforcementPlayer || p2 instanceof StepwisePlayer || p2 instanceof ChordFollowingReinforcementLearning || p2 instanceof ChordSpecificReinforcementPlayer) {
+            if (p2 instanceof SimpleReinforcementPlayer || p2 instanceof StepwisePlayer || p2 instanceof ChordFollowingReinforcementLearning || p2 instanceof ChordSpecificReinforcementPlayer || p2 instanceof ChordSpecificMarkovPlayer) {
                 p2.update(payoff);
             }
             if (p1 instanceof DoubleReinforcementPlayer) {
@@ -191,78 +186,78 @@ public class Main {
         notesFreqMap.put("C8", new double[]{4067.20, 4186}); //no notes past 4186
     }
 
-    //counts octaves as the same note
-    //Applies Shannon Diversity Index as mentioned in the paper
-    private static double calcVarianceScore(ArrayList<Double> allPastNotes) {
-        Map<String, Integer> noteCounts = new HashMap<String, Integer>();
-        final String[] notes = new String[]{"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
-        for (String s: notes) {
-            noteCounts.put(s, 0);
-        }
-        for (double x: allPastNotes) {
-            for (String s: notesFreqMap.keySet()) {
-                //if else necessary so that C and C#, etc. are not counted as the same note
-                if (x >= notesFreqMap.get(s)[0] && x < notesFreqMap.get(s)[1]) {
-                    if (s.contains("#")) {
-                        for (int i =notes.length-1; i >=0; i--) {
-                            String note = notes[i];
-                            if (s.startsWith(note)) {
-                                noteCounts.put(note, noteCounts.get(note)+1);
-                                break;
-                            }
-                        }
-                    }
-                    else {
-                        for (String note : notes) {
-                            if (s.startsWith(note)) {
-                                noteCounts.put(note, noteCounts.get(note)+1);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        //Calculating Shannon Diversity Index
-        double diversityIndex = 0;
-        for (int x: noteCounts.values()) {
-            double Pi = (double)x / allPastNotes.size();
-            double calc = -Pi*Math.log(Pi); //-Pi * ln(Pi)
-            if (Double.isNaN(calc)) {
-                calc = 0;
-            }
-            diversityIndex+=calc;
-        }
-        return diversityIndex/Math.log(noteCounts.size()); //H/Hmax
-    }
+    // //counts octaves as the same note
+    // //Applies Shannon Diversity Index as mentioned in the paper
+    // private static double calcVarianceScore(ArrayList<Double> allPastNotes) {
+    //     Map<String, Integer> noteCounts = new HashMap<String, Integer>();
+    //     final String[] notes = new String[]{"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
+    //     for (String s: notes) {
+    //         noteCounts.put(s, 0);
+    //     }
+    //     for (double x: allPastNotes) {
+    //         for (String s: notesFreqMap.keySet()) {
+    //             //if else necessary so that C and C#, etc. are not counted as the same note
+    //             if (x >= notesFreqMap.get(s)[0] && x < notesFreqMap.get(s)[1]) {
+    //                 if (s.contains("#")) {
+    //                     for (int i =notes.length-1; i >=0; i--) {
+    //                         String note = notes[i];
+    //                         if (s.startsWith(note)) {
+    //                             noteCounts.put(note, noteCounts.get(note)+1);
+    //                             break;
+    //                         }
+    //                     }
+    //                 }
+    //                 else {
+    //                     for (String note : notes) {
+    //                         if (s.startsWith(note)) {
+    //                             noteCounts.put(note, noteCounts.get(note)+1);
+    //                             break;
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     //Calculating Shannon Diversity Index
+    //     double diversityIndex = 0;
+    //     for (int x: noteCounts.values()) {
+    //         double Pi = (double)x / allPastNotes.size();
+    //         double calc = -Pi*Math.log(Pi); //-Pi * ln(Pi)
+    //         if (Double.isNaN(calc)) {
+    //             calc = 0;
+    //         }
+    //         diversityIndex+=calc;
+    //     }
+    //     return diversityIndex/Math.log(noteCounts.size()); //H/Hmax
+    // }
 
-    //Calculates harmony score as described in the paper
-    private static double calcHarmonyScore(double[] chord, double freqOne, double freqTwo) {
-        ArrayList<Double> allNotes = new ArrayList<Double>();
-        for (double x: chord) {
-            allNotes.add(x);
-        }
-        allNotes.add(freqOne); allNotes.add(freqTwo);
-        int sum = 0;
-        for (int i = 0; i < allNotes.size()-1; i++) {
-            for (int j = i + 1; j < allNotes.size(); j++) {
-                sum+=addNumDenomSimplifiedFraction(allNotes.get(i), allNotes.get(j));
-            }
-        }
-        int numTimesOfLoop = (allNotes.size()*(allNotes.size()-1))/2;
-        return (int) (Math.round(sum/((double)(numTimesOfLoop))));
+    // //Calculates harmony score as described in the paper
+    // private static double calcHarmonyScore(double[] chord, double freqOne, double freqTwo) {
+    //     ArrayList<Double> allNotes = new ArrayList<Double>();
+    //     for (double x: chord) {
+    //         allNotes.add(x);
+    //     }
+    //     allNotes.add(freqOne); allNotes.add(freqTwo);
+    //     int sum = 0;
+    //     for (int i = 0; i < allNotes.size()-1; i++) {
+    //         for (int j = i + 1; j < allNotes.size(); j++) {
+    //             sum+=addNumDenomSimplifiedFraction(allNotes.get(i), allNotes.get(j));
+    //         }
+    //     }
+    //     int numTimesOfLoop = (allNotes.size()*(allNotes.size()-1))/2;
+    //     return (int) (Math.round(sum/((double)(numTimesOfLoop))));
         
-    }
+    // }
 
-    /**
-     * Takes in two doubles, x and y
-     * Finds the simplest fraction p/q within 1% of x/y and returns the sum of the numerator and denominator
-     */
-    private static int addNumDenomSimplifiedFraction(double x, double y) {
-        double ratio = x / y;
-        int[] fraction = SternBrocot.sternBrocot(ratio, 0.01); // we use 1% error due to human recognizable deviation
-        return (fraction[0]) + (fraction[1]);
-    }
+    // /**
+    //  * Takes in two doubles, x and y
+    //  * Finds the simplest fraction p/q within 1% of x/y and returns the sum of the numerator and denominator
+    //  */
+    // private static int addNumDenomSimplifiedFraction(double x, double y) {
+    //     double ratio = x / y;
+    //     int[] fraction = Util.sternBrocot(ratio, 0.01); // we use 1% error due to human recognizable deviation
+    //     return (fraction[0]) + (fraction[1]);
+    // }
 
     /**
      * Creates a file name unique to this pair of player types

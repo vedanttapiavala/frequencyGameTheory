@@ -10,6 +10,6 @@ public class RandomPlayer extends Player {
 
     @Override
     public double genNote() {
-        return Math.pow(2, (((int) (Math.random() * 88)) / 12.0)) * 27.5; //range from 27.5 to 4186.01 (88 keys on the piano)
+        return Util.noteToFreq((int) (Math.random() * 88));
     }
 }

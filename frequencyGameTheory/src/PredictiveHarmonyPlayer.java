@@ -19,7 +19,7 @@ public class PredictiveHarmonyPlayer extends Player {
      */
     public double genNote() {
         if (lastPlayedOpponentNote == 0.0) {
-            return Math.pow(2, (((int) (Math.random() * 88)) / 12.0)) * 27.5; //plays random note if this is the first note
+            return Util.noteToFreq((int) (Math.random() * 88)); //plays random note if this is the first note
         }
         //Playing a high frequency note that's a multiple of lastPlayedOpponentNote
         int lastPlayedOpponentInt = (int) lastPlayedOpponentNote;

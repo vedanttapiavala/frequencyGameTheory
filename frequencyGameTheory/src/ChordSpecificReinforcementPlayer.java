@@ -41,7 +41,7 @@ public class ChordSpecificReinforcementPlayer extends Player {
             }
         }
         currNoteInd = index;
-        return Math.pow(2, (index) / 12.0) * 27.5;
+        return Util.noteToFreq(index);
         // int i = 0;
         // for (String s: Main.notesFreqMap.keySet()) {
         //     if (i == index) {
@@ -61,7 +61,7 @@ public class ChordSpecificReinforcementPlayer extends Player {
     protected void update(double recentPayoff) {
         //Assigns an int for each chord; then used to update the probabilities for the chord that we are currently playing
         int currChord = Arrays.equals(bb7, Main.chordProgressionFreq) ? 0 : Arrays.equals(eb7, Main.chordProgressionFreq) ? 1 : Arrays.equals(cm7, Main.chordProgressionFreq) ? 2 : 3;
-        probabilities[currChord][currNoteInd]+=recentPayoff;
+        probabilities[currChord][currNoteInd]+=5 * recentPayoff;
         if (probabilities[currChord][currNoteInd] < 0) {
             probabilities[currChord][currNoteInd] = 0;
         }
