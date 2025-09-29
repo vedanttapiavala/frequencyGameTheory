@@ -8,7 +8,7 @@ import java.util.*;
  */
 public class Musician {
 
-    public static void play(ArrayList<Integer> player1Freqs, ArrayList<Integer> player2Freqs, String fileName) {
+    public static void play(ArrayList<Double> player1Freqs, ArrayList<Double> player2Freqs, String fileName) {
         
         try {
             // Create a Sequence and a Track

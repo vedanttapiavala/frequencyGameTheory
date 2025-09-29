@@ -2,27 +2,27 @@ import java.util.ArrayList;
 
 /**
  * Player class for Stepwise Change player
- * If last payoff was positive, shift the frequency slightly
- * Otherwise, play the same note in a different octave
+ * If last payoff was positive, play the same note in a different octave
+ * Otherwise, shift the frequency slightly
  */
 public class StepwisePlayer extends Player {
-    private int currNote;
+    private double currNote;
     private ArrayList<Double> pastTwoPayoffs;
     public StepwisePlayer() {
         super();
-        currNote = ((int) (Math.random() * 4159)) + 28;
+        currNote = Math.pow(2, (((int) (Math.random() * 88)) / 12.0)) * 27.5;
         pastTwoPayoffs = new ArrayList<Double>();
     }
 
     @Override
-    public int genNote()  {
+    public double genNote()  {
         if (pastTwoPayoffs.size() == 0 || pastTwoPayoffs.size() == 1) {
             if (pastTwoPayoffs.size() == 0) {
-                currNote = ((int) (Math.random() * 4159)) + 28;
+                currNote = Math.pow(2, (((int) (Math.random() * 88)) / 12.0)) * 27.5;
             }
             return currNote;
         }
-        if (pastTwoPayoffs.get(1) > 0) { //payoff positive
+        if (pastTwoPayoffs.get(1) < 0) { //payoff negative
             if (Math.random() < .5) {
                 currNote/=((Math.random()*.1)+1); //divides it by between 1-1.1
             }
@@ -38,7 +38,8 @@ public class StepwisePlayer extends Player {
             return currNote;
         }
         //payoff was negative
-        int maxMultiplicationFactor = ((int) 4186/currNote) > 9 ? 9 : ((int) 4186/currNote);
+        int currNoteInt = (int)currNote;
+        int maxMultiplicationFactor = ((int) 4186/(currNoteInt)) > 9 ? 9 : ((int) 4186/currNoteInt);
         if (maxMultiplicationFactor != 1) { //a high frequency multiple is possible
             int multiplicationFactor = ((int) (Math.random() * (maxMultiplicationFactor-1)) + 2); //between 2 and maxMultiplicationFactor, inclusive
             currNote*=multiplicationFactor;
